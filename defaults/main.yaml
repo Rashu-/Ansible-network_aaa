@@ -1,0 +1,8 @@
+---
+
+# device features to be enabled
+aaa_servers:
+  - tacacs: 
+      address: 1.1.1.1
+      port: 89
+      timeout: 10

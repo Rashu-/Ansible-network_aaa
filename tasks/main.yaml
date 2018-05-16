@@ -19,6 +19,8 @@
   when: >
     ansible_network_os == 'nxos' and
     item.is_tacacs | default(false) == True
+  notify:
+    - Tacacs global     
   tags: 
     - aaa_config
     - tacacs_config
@@ -37,7 +39,10 @@
   when: >
     ansible_network_os == 'nxos' and
     item.is_radius | default(false) == True
+  notify:
+    - Radius global 
   tags: 
     - aaa_config
     - radius_config
     - nxos
+

@@ -1,0 +1,25 @@
+- name: Radius global
+  nxos_aaa_server:
+    state: present
+    server_type: radius
+    deadtime: "{{ aaa_vars.deadtime | default(omit) }}"
+    directed_request: "{{ aaa_vars.directed_request | default(omit) }}"
+  when: >
+    ansible_network_os == 'nxos' 
+  tags: 
+    - aaa_config
+    - radius_config
+    - nxos
+
+- name: Tacacs global
+  nxos_aaa_server:
+    state: present
+    server_type: tacacs
+    deadtime: "{{ aaa_vars.deadtime | default(omit) }}"
+    directed_request: "{{ aaa_vars.directed_request | default(omit) }}"
+  when: >
+    ansible_network_os == 'nxos' 
+  tags: 
+    - aaa_config
+    - tacacs_config
+    - nxos

@@ -1,0 +1,28 @@
+
+---
+
+
+
+galaxy_info:
+
+  author: Dan Murarasu
+
+  description: A role that configures aaa on network devices
+
+  license: GPL3
+
+  min_ansible_version: 2.5
+
+  platforms:
+
+    - name: nxos
+
+      versions:
+
+        - 7.x
+
+  galaxy_tags:
+
+    - network
+
+dependencies: [Ansible-enable_features]             # needs tacacs+ feature to be enabled or role will fail if configuring tacacs

@@ -5,18 +5,35 @@
     that: >
       ansible_network_os == 'nxos' or
       ansible_network_os == 'ios'
-    msg: Network device OS not defined 
+    msg: Network device OS not defined or not supported {{ ansible_network_os }}
 
-- name: Configure aaa servers
+- name: Configure nxos aaa tacacs servers
   nxos_aaa_server_host:
     state: present
     server_type: tacacs
     address: "{{ item.ip }}"
-    tacacs_port: "{{ item.port }}"
+    tacacs_port: "{{ item.t_port }}"
     host_timeout: "{{ item.timeout }}"
-  with_items: "{{ aaa_servers.tacacs }}"
+    key: "{{ item.t_key }}"
+  with_items: "{{ aaa_servers }}"
   when: >
     ansible_network_os == 'nxos' and
-    aaa_servers.tacacs is defined
+    item.is_tacacs is == True
+  tags: 
+    - aaa_config
+
+- name: Configure nxos aaa radius servers
+  nxos_aaa_server_host:
+    state: present
+    server_type: radius
+    address: "{{ item.ip }}"
+    auth_port: "{{ item.r_auth_port }}"
+    acct_port: "{{ item.r_acct_port }}"
+    host_timeout: "{{ item.timeout }}"
+    key: "{{ item.r_key }}"
+  with_items: "{{ aaa_servers }}"
+  when: >
+    ansible_network_os == 'nxos' and
+    item.is_radius is == True
   tags: 
     - aaa_config

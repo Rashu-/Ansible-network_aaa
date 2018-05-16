@@ -1,8 +1,18 @@
 ---
 
-# device features to be enabled
+# Define aaa servers to be configured. If servers are used as tacacs change "is_tacacs" to "True".
+# If they are going to be used for radius change "is_radius" to "True". 
+# If you use the same servers for both radius and tacacs change both vars to "True"
+# Define the vars relevant to you otherwise the defaults will be used.
+ 
 aaa_servers:
-  - tacacs: 
-      address: 1.1.1.1
-      port: 89
-      timeout: 10
+     - name: aaa1.com
+       ip: 1.1.1.1
+       timeout: 10
+       is_tacacs: False
+       t_port: 89
+       t_key: ttest
+       is_radius: False
+       r_auth_port: 2084
+       r_acct_port: 2084
+       r_key: rtest

@@ -1,18 +1,32 @@
 ---
 
-# Define aaa servers to be configured. If servers are used as tacacs change "is_tacacs" to "True".
-# If they are going to be used for radius change "is_radius" to "True". 
+# Define the aaa servers to be configured
+# If the servers are used for tacacs change "is_tacacs" to "True"
+# If they are going to be used for radius change "is_radius" to "True"
 # If you use the same servers for both radius and tacacs change both vars to "True"
+# "name" is used by default if "ip" is not defined. At least one of them  must be defined for the role to work
 # Define the vars relevant to you otherwise the defaults will be used.
  
 aaa_servers:
-     - name: aaa1.com
-       ip: 1.1.1.1
-       timeout: 10
-       is_tacacs: False
+     - name: srv1.acme.com
+#       ip: 1.1.1.1
+#       timeout: 10
+       is_tacacs: True
        t_port: 89
-       t_key: ttest
-       is_radius: False
-       r_auth_port: 2084
-       r_acct_port: 2084
-       r_key: rtest
+#       t_key: ttest
+       is_radius: True
+       r_auth_port: 1812
+       r_acct_port: 1813
+#       r_key: rtest
+
+     - name: aaa=srv2.acme.com
+#       ip: 2.2.2.2
+#       timeout: 10
+       is_tacacs: True
+       t_port: 89
+#       t_key: ttest
+       is_radius: True
+       r_auth_port: 1812
+       r_acct_port: 1813
+#       r_key: rtest
+

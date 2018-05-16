@@ -5,35 +5,39 @@
     that: >
       ansible_network_os == 'nxos' or
       ansible_network_os == 'ios'
-    msg: "Network device OS not defined or not supported {{ ansible_network_os }}"
+    msg: "Network device OS not defined or not supported by this role: {{ ansible_network_os }}"
 
 - name: Configure nxos aaa tacacs servers
   nxos_aaa_server_host:
     state: present
     server_type: tacacs
-    address: "{{ item.ip }}"
-    tacacs_port: "{{ item.t_port }}"
-    host_timeout: "{{ item.timeout }}"
-    key: "{{ item.t_key }}"
+    address:  "{{ item.ip | default(item.name) }}" 
+    tacacs_port: "{{ item.t_port | default(omit) }}"
+    host_timeout: "{{ item.timeout | default(omit) }}"
+    key: "{{ item.t_key | default(omit) }}"
   with_items: "{{ aaa_servers }}"
   when: >
     ansible_network_os == 'nxos' and
-    item.is_tacacs is == True
+    item.is_tacacs | default(false) == True
   tags: 
     - aaa_config
+    - tacacs_config
+    - nxos
 
 - name: Configure nxos aaa radius servers
   nxos_aaa_server_host:
     state: present
     server_type: radius
-    address: "{{ item.ip }}"
-    auth_port: "{{ item.r_auth_port }}"
-    acct_port: "{{ item.r_acct_port }}"
-    host_timeout: "{{ item.timeout }}"
-    key: "{{ item.r_key }}"
+    address: "{{ item.ip | default(item.name) }}"
+    auth_port: "{{ item.r_auth_port | default(omit) }}"
+    acct_port: "{{ item.r_acct_port | default(omit) }}"
+    host_timeout: "{{ item.timeout | default(omit) }}"
+    key: "{{ item.r_key | default(omit) }}"
   with_items: "{{ aaa_servers }}"
   when: >
     ansible_network_os == 'nxos' and
-    item.is_radius is == True
+    item.is_radius | default(false) == True
   tags: 
     - aaa_config
+    - radius_config
+    - nxos

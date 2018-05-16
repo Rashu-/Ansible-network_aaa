@@ -5,7 +5,7 @@
     that: >
       ansible_network_os == 'nxos' or
       ansible_network_os == 'ios'
-  msg: Network device OS not defined or not supported {{ ansible_network_os }}
+    msg: "Network device OS not defined or not supported {{ ansible_network_os }}"
 
 - name: Configure nxos aaa tacacs servers
   nxos_aaa_server_host:

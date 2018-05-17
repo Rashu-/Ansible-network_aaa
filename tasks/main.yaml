@@ -20,7 +20,8 @@
     ansible_network_os == 'nxos' and
     item.is_tacacs | default(false) == True
   notify:
-    - Tacacs global     
+    - Tacacs global
+    - Tacacs group
   tags: 
     - aaa_config
     - tacacs_config

@@ -23,3 +23,18 @@
     - aaa_config
     - tacacs_config
     - nxos
+
+- name: Tacacs group
+  nxos_config:
+    lines: 
+      - server {{ item.ip | default(item.name) }}
+      - source-interface {{ aaa_vars.source_interface | default('loopback 0') }}
+    parents: aaa group server tacacs+ {{ aaa_vars.tacacs_group_name | default('tacacs+') }}
+  with_items: "{{ aaa_servers }}"    
+  when: >
+    ansible_network_os == 'nxos' 
+  tags: 
+    - aaa_config
+    - tacacs_config
+    - nxos
+

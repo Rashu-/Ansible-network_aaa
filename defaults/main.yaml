@@ -9,12 +9,15 @@
 aaa_vars:
   radius_auth_port: 1812
   radius_acct_port: 1813
-  timeout: 5                 # device default is 5
+  timeout: 5                      # device default is 5
   tacacs_port: 89
-  tacacs_key: ttest           # use something like ansible vault to encrypt your sensitive info
-  radius_key: rtest           # use something like ansible vault to encrypt your sensitive inf
-  deadtime: 0                 # device default is 0
-  directed_request: disabled  # device default is disabled
+  tacacs_key: ttest               # use something like ansible vault to encrypt your sensitive info
+  radius_key: rtest               # use something like ansible vault to encrypt your sensitive inf
+  deadtime: 0                     # device default is 0
+  directed_request: disabled      # device default is disabled
+#  tacacs_group_name: Test_ACS    # role default is tacacs+
+#  source_interface: loopback 0   # role default is loopback 0
+
  
 aaa_servers:
      - name: srv1.acme.com

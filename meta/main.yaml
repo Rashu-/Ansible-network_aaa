@@ -25,4 +25,4 @@ galaxy_info:
 
     - network
 
-dependencies: [Ansible-enable_features]             # needs tacacs+ feature to be enabled or role will fail if configuring tacacs
+#dependencies: [Ansible-enable_features]             # needs tacacs+ feature to be enabled or role will fail if configuring tacacs

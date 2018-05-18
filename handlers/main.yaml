@@ -29,7 +29,7 @@
     lines: 
       - server {{ item.ip | default(item.name) }}
       - source-interface {{ aaa_vars.source_interface | default('loopback 0') }}
-    parents: aaa group server tacacs+ {{ aaa_vars.tacacs_group_name | default('tacacs+') }}
+    parents: aaa group server tacacs+ {{ aaa_vars.tacacs_group_name | mandatory }}
   with_items: "{{ aaa_servers }}"    
   when: >
     ansible_network_os == 'nxos' 
@@ -38,3 +38,17 @@
     - tacacs_config
     - nxos
 
+- name: aaa central auth
+  nxos_config:
+    lines: 
+      - aaa authentication login default group {{ aaa_vars.tacacs_group_name | default(aaa_vars.radius_group_name) }} {{ no_local | default('local') }}
+      - aaa authentication login console group {{ aaa_vars.console_group | default('local') }}    
+      - aaa authentication login error-enable
+      - aaa authentication login ascii-authentication        
+    parents:    
+  when: >
+    ansible_network_os == 'nxos' and
+    aaa_vars.only_local != True
+  tags: 
+    - aaa_config    
+    - nxos

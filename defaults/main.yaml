@@ -6,17 +6,24 @@
 # If you use the same servers for both radius and tacacs change both vars to "True"
 # "name" is used by default if "ip" is not defined. At least one of them  must be defined for the role to work
 # Define the vars relevant to you otherwise the defaults will be used.
+# If both tacacs and radius are used, tacacs group will be preferred for central network device auth. 
+
 aaa_vars:
   radius_auth_port: 1812
   radius_acct_port: 1813
-  timeout: 5                      # device default is 5
+  timeout: 5                      # device default is 5. This is used for both radius and tacacs
   tacacs_port: 89
   tacacs_key: ttest               # use something like ansible vault to encrypt your sensitive info
   radius_key: rtest               # use something like ansible vault to encrypt your sensitive inf
-  deadtime: 0                     # device default is 0
-  directed_request: disabled      # device default is disabled
-#  tacacs_group_name: Test_ACS    # role default is tacacs+
+  deadtime: 0                     # device default is 0. Used for both radius and tacacs
+  directed_request: disabled      # device default is disabled. Used for both radius and tacacs
+  tacacs_group_name: tacacs+      # Configure your tacacs group name if tacacs is used
+  radius_group_name: radius       # Configure your radius group name if radius is used
+#  console_group: tac/rad group   # uncomment this and add your radius/tacacs group for console auth. Role default is local.    
 #  source_interface: loopback 0   # role default is loopback 0
+  only_local: False               # Make this True when you want only local auth on the device
+#  no_local:                      # uncomment this when you don't want local auth if tacacs/radius is down
+            # create another auth group for console auth
 
  
 aaa_servers:
@@ -29,6 +36,7 @@ aaa_servers:
        is_radius: True        # True if you want to use server as radius
        r_auth_port: "{{ aaa_vars.radius_auth_port }}"
        r_acct_port: "{{ aaa_vars.radius_acct_port }}"
+       group: "{{ aaa_vars.tacacs_group_name | default(omit) }}"
 #       r_key: "{{ aaa_vars.radius_key }}"
 
      - name: srv2.acme.com
@@ -40,6 +48,7 @@ aaa_servers:
        is_radius: True        # True if you want to use server as radius
        r_auth_port: "{{ aaa_vars.radius_auth_port }}"
        r_acct_port: "{{ aaa_vars.radius_acct_port }}"
+       group: "{{ aaa_vars.tacacs_group_name }}"       
 #       r_key: "{{ aaa_vars.radius_key }}"
 
 

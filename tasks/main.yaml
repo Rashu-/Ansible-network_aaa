@@ -50,6 +50,21 @@
     - radius_config
     - nxos
 
+- name: Create local users
+  nxos_user:
+    name: "{{ item.name }}"
+    configured_password: "{{ item.password }}"
+    role: "{{ item.role | default ('priv-0') }}"
+    sshkey: "{{ item.ssh_key | default (omit) }}"
+    state: "{{ item.state | default ('present') }}"
+  with_items: "{{ aaa_local_users }}"
+  when: >
+    ansible_network_os == 'nxos' and
+    'name' in item
+  tags: 
+    - aaa_local_user
+    - nxos
+
 - name: Configure nxos aaa auth/acct to local
   nxos_config:
     lines: 

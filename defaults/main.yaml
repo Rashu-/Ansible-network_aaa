@@ -51,5 +51,11 @@ aaa_servers:
        group: "{{ aaa_vars.tacacs_group_name }}"       
 #       r_key: "{{ aaa_vars.radius_key }}"
 
-
+aaa_local_users:
+  - name: test
+    state: present
+    password: test
+#    role:                           # default nxos role is priv-0. other roles on nxos are network-admin network-operator ... 
+#    ssh_key:                        # ssh public key to be used for the user
+    expire_date:                    # set user expire date YYYY-MM-DD format
        

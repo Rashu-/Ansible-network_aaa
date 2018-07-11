@@ -7,23 +7,51 @@
       ansible_network_os == 'ios'
     msg: "Network device OS not defined or not supported by this role: {{ ansible_network_os }}"
 
+- name: aaa global
+  nxos_aaa_server:
+    state: "{{ item.value.state | default(omit) }}"
+    server_type: "{{ item.key }}"
+    deadtime: "{{ item.value.deadtime | default(omit) }}"
+    directed_request: "{{ item.value.directed_request | default(omit) }}"
+  loop: "{{ aaa_global | dict2items }}"
+  when: >
+    ansible_network_os == 'nxos' and
+    aaa_global is defined
+  tags: 
+    - aaa_config
+    - tacacs_config
+    - radius_config
+    - nxos
+
 - name: Configure nxos aaa tacacs servers
   nxos_aaa_server_host:
-    state: present
+    state: "{{ item.state | default(omit) }}"
     server_type: tacacs
     address:  "{{ item.ip | default(item.name) }}" 
     tacacs_port: "{{ item.t_port | default(omit) }}"
     host_timeout: "{{ item.timeout | default(omit) }}"
     key: "{{ item.t_key | default(omit) }}"
-  with_items: "{{ aaa_servers }}"
+  loop: "{{ aaa_servers }}"
   when: >
-    ansible_network_os == 'nxos' and    
+    ansible_network_os == 'nxos' and 
+    aaa_servers is defined and   
     item.is_tacacs | default(false) == True
-  notify:
-    - Tacacs global
-    - Tacacs group
-    - aaa central auth    
-#    - aaa auth
+  tags: 
+    - aaa_config
+    - tacacs_config
+    - nxos
+
+- name: Confgure tacacs groups
+  nxos_config:
+    lines: 
+      - server {{ item.ip | default(item.name) }}
+      - source-interface {{ aaa_vars.source_interface | default('loopback 0') }}
+    parents: aaa group server tacacs+ {{ item.tac_group | default('tacacs') | mandatory }}
+  loop: "{{ aaa_servers }}"    
+  when: >
+    ansible_network_os == 'nxos' and
+    aaa_servers is defined and   
+    item.is_tacacs | default(false) == True    
   tags: 
     - aaa_config
     - tacacs_config
@@ -31,20 +59,34 @@
 
 - name: Configure nxos aaa radius servers
   nxos_aaa_server_host:
-    state: present
+    state: "{{ item.state | default(omit) }}"
     server_type: radius
     address: "{{ item.ip | default(item.name) }}"
     auth_port: "{{ item.r_auth_port | default(omit) }}"
     acct_port: "{{ item.r_acct_port | default(omit) }}"
     host_timeout: "{{ item.timeout | default(omit) }}"
     key: "{{ item.r_key | default(omit) }}"
-  with_items: "{{ aaa_servers }}"
+  loop: "{{ aaa_servers }}"
   when: >
     ansible_network_os == 'nxos' and
+    aaa_servers is defined and
     item.is_radius | default(false) == True
-  notify:
-    - Radius global 
-    - aaa central auth
+  tags: 
+    - aaa_config
+    - radius_config
+    - nxos
+
+- name: Confgure radius groups
+  nxos_config:
+    lines: 
+      - server {{ item.ip | default(item.name) }}
+      - source-interface {{ aaa_vars.source_interface | default('loopback 0') }}
+    parents: aaa group server radius {{ item.rad_group | default('radius') | mandatory }}
+  loop: "{{ aaa_servers }}"    
+  when: >
+    ansible_network_os == 'nxos' and
+    aaa_servers is defined and   
+    item.is_radius | default(false) == True    
   tags: 
     - aaa_config
     - radius_config
@@ -57,12 +99,29 @@
     role: "{{ item.role | default ('priv-0') }}"
     sshkey: "{{ item.ssh_key | default (omit) }}"
     state: "{{ item.state | default ('present') }}"
-  with_items: "{{ aaa_local_users }}"
+  loop: "{{ aaa_local_users }}"
   when: >
     ansible_network_os == 'nxos' and
+    aaa_local_users is defined and
     'name' in item
   tags: 
     - aaa_local_user
+    - nxos
+
+- name: Configure aaa central auth
+  nxos_config:
+    lines: 
+      - aaa authentication login default group {{ aaa_vars.tacacs_group_name | default(aaa_vars.radius_group_name) }} {{ no_local | default('local') }}
+      - aaa authentication login console group {{ aaa_vars.console_group | default('local') }}    
+      - aaa authentication login error-enable
+      - aaa authentication login ascii-authentication        
+    parents:    
+  when: >
+    ansible_network_os == 'nxos' and
+    (aaa_vars.tacacs_group_name is defined or aaa_vars.radius_group_name is defined ) and
+    aaa_vars.only_local | default(false) != True
+  tags: 
+    - aaa_config    
     - nxos
 
 - name: Configure nxos aaa auth/acct to local
@@ -75,7 +134,7 @@
     parents:   
   when: >
     ansible_network_os == 'nxos' and
-    aaa_vars.only_local == True
+    aaa_vars.only_local | default(false) == True
   tags: 
     - aaa_config    
     - nxos

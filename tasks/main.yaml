@@ -112,7 +112,7 @@
   nxos_config:
     lines: 
       - aaa authentication login default group {{ aaa_vars.tacacs_group_name | default(aaa_vars.radius_group_name) }} {{ no_local | default('local') }}
-      - aaa authentication login console group {{ aaa_vars.console_group | default('local') }}    
+      - aaa authentication login console local
       - aaa authentication login error-enable
       - aaa authentication login ascii-authentication        
     parents:    
@@ -128,7 +128,7 @@
   nxos_config:
     lines: 
       - aaa authentication login default group local
-      - aaa authentication login console group local
+      - aaa authentication login console local
       - aaa authentication login error-enable
       - aaa authentication login ascii-authentication
     parents:   

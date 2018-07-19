@@ -46,7 +46,7 @@
   nxos_config:
     lines:
       - server {{ item.ip | default(item.name) }}
-      - source-interface {{ aaa_vars.source_interface | default('loopback 0') }}
+      - source-interface {{ aaa_vars.source_interface | default('loopback0') }}
     parents: aaa group server tacacs+ {{ item.tac_group | default('tacacs') | mandatory }}
   loop: "{{ aaa_servers }}"
   when: >
@@ -82,7 +82,7 @@
   nxos_config:
     lines:
       - server {{ item.ip | default(item.name) }}
-      - source-interface {{ aaa_vars.source_interface | default('loopback 0') }}
+      - source-interface {{ aaa_vars.source_interface | default('loopback0') }}
     parents: aaa group server radius {{ item.rad_group | default('radius') | mandatory }}
   loop: "{{ aaa_servers }}"
   when: >
